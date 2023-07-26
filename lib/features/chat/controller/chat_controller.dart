@@ -7,6 +7,7 @@ import 'package:get_storage/get_storage.dart';
 import 'package:intl/intl.dart';
 import 'package:mongo_dart/mongo_dart.dart';
 import 'package:realtime_chat/common/enums/message_enum.dart';
+import 'package:realtime_chat/common/utils/address.dart';
 import 'package:realtime_chat/common/utils/aes_encryption.dart';
 import 'package:realtime_chat/common/utils/rsa_encryption.dart';
 import 'package:realtime_chat/common/utils/util.dart';
@@ -18,8 +19,7 @@ class ChatController extends GetxController {
   // --------------------------------------------------------------
   // Define local variables
   // --------------------------------------------------------------
-  final String endpoint =
-      'http://10.73.214.182:3001'; // Change this to valid endpoint
+  final String endpoint = ENDPOINT_URL; // Change this to valid endpoint
   final Dio dio = Dio();
   final e2ee = E2EE_AES();
   final e2eersa = E2EE_RSA();
@@ -60,7 +60,6 @@ class ChatController extends GetxController {
     roomKey: '',
     timesent: '',
   ).obs;
-  
 
   // --------------------------------------------------------------
   // Function to start updating list of chatRooms
