@@ -13,10 +13,13 @@ import 'package:realtime_chat/common/utils/util.dart';
 import 'package:realtime_chat/features/auth/controller/auth_controller.dart';
 import 'package:realtime_chat/models/chat_room_model.dart';
 import 'package:realtime_chat/models/message_model.dart';
-import 'package:realtime_chat/models/product_model.dart';
 
 class ChatController extends GetxController {
-  final String endpoint = 'http://10.73.176.155:3001';
+  // --------------------------------------------------------------
+  // Define local variables
+  // --------------------------------------------------------------
+  final String endpoint =
+      'http://10.73.214.182:3001'; // Change this to valid endpoint
   final Dio dio = Dio();
   final e2ee = E2EE_AES();
   final e2eersa = E2EE_RSA();
@@ -25,6 +28,9 @@ class ChatController extends GetxController {
   Timer? chatUpdateTimer;
   Timer? messageUpdateTimer;
 
+  // --------------------------------------------------------------
+  // Initial run start listing chatRooms
+  // --------------------------------------------------------------
   @override
   void onInit() {
     super.onInit();
@@ -32,12 +38,20 @@ class ChatController extends GetxController {
     startChatUpdates(ctrl.currentUser.value.userId.toHexString());
   }
 
+  // --------------------------------------------------------------
+  // Create a local variable to store chatRooms, messages,
+  // selectedMessage, receiverUser, selectedRoom
+  // --------------------------------------------------------------
   RxList<ChatRoomModel> chatRoomList = <ChatRoomModel>[].obs;
   RxList<MessageModel> messageList = <MessageModel>[].obs;
   RxString selectedMessage = ''.obs;
 
-  Rx<UserChatRoom> receiverUser =
-      UserChatRoom(userId: '', name: '', profilePic: '', roomKey: '').obs;
+  Rx<UserChatRoom> receiverUser = UserChatRoom(
+    userId: '',
+    name: '',
+    profilePic: '',
+    roomKey: '',
+  ).obs;
 
   Rx<ChatRoomModel> selectedRoom = ChatRoomModel(
     chatId: '',
@@ -46,32 +60,15 @@ class ChatController extends GetxController {
     roomKey: '',
     timesent: '',
   ).obs;
+  
 
+  // --------------------------------------------------------------
+  // Function to start updating list of chatRooms
+  // --------------------------------------------------------------
   void startChatUpdates(String id) {
     chatUpdateTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
       getChat(id);
     });
-  }
-
-  void startMessageUpdates(RxString id) {
-    messageUpdateTimer =
-        Timer.periodic(const Duration(milliseconds: 500), (timer) {
-      getMessage(id);
-    });
-  }
-
-  void updateIsSeen(String chatId, String receiverId) async {
-    await db.open();
-    var collection = db.collection('chats');
-    try {
-      await collection.updateOne(
-          where
-              .eq('_id', ObjectId.fromHexString(chatId))
-              .and(where.eq('users.userId', receiverId)),
-          modify.set('users.\$[].isSeen.', false));
-    } catch (e) {
-      rethrow;
-    }
   }
 
   Stream<List<ChatRoomModel>> getChat(String id) {
@@ -93,6 +90,16 @@ class ChatController extends GetxController {
     });
     // print(chatRoomList.length);
     return streamController.stream;
+  }
+
+  // --------------------------------------------------------------
+  // Function to start updating list of messages
+  // --------------------------------------------------------------
+  void startMessageUpdates(RxString id) {
+    messageUpdateTimer =
+        Timer.periodic(const Duration(milliseconds: 500), (timer) {
+      getMessage(id);
+    });
   }
 
   Stream<List<MessageModel>> getMessage(RxString id) {
@@ -125,16 +132,9 @@ class ChatController extends GetxController {
     return streamController.stream;
   }
 
-  Future<ProductModel> getProduct(String id) {
-    return dio.get('$endpoint/product/$id').then((response) {
-      if (response.statusCode == 200) {
-        return ProductModel.fromJson(response.data);
-      } else {
-        throw Exception('Failed to fetch product');
-      }
-    });
-  }
-
+  // --------------------------------------------------------------
+  // Function to initiate chat with merchant or user
+  // --------------------------------------------------------------
   void initiateChat(String userId, String name, String profilePic,
       String userPublicKey, String recipientPublicKey) async {
     final key = e2ee.generateAESKey();
@@ -181,6 +181,9 @@ class ChatController extends GetxController {
     }
   }
 
+  // --------------------------------------------------------------
+  // Function to select a chat from list
+  // --------------------------------------------------------------
   void selectChat(
     String chatId,
     String userId,
@@ -211,6 +214,9 @@ class ChatController extends GetxController {
     );
   }
 
+  // --------------------------------------------------------------
+  // Function to save sent message to "chats" collection
+  // --------------------------------------------------------------
   void saveDataToChat(
     String receiverId,
     String chatId,
@@ -231,6 +237,9 @@ class ChatController extends GetxController {
     }
   }
 
+  // --------------------------------------------------------------
+  // Function to save sent message to "message" collection
+  // --------------------------------------------------------------
   void saveDataToMessage(
     String chatId,
     String message,
@@ -257,6 +266,9 @@ class ChatController extends GetxController {
     }
   }
 
+  // --------------------------------------------------------------
+  // Function to send text message
+  // --------------------------------------------------------------
   void sendTextMessage({
     required String text,
     required String chatId,
@@ -275,32 +287,5 @@ class ChatController extends GetxController {
       MessageEnum.TEXT,
     );
     saveDataToChat(receiverId, chatId, text);
-  }
-
-  void sendBroadcastMessage({
-    required String text,
-    required List chatId,
-    required List receiverId,
-    required List roomKey,
-  }) {
-    final privateKey =
-        box.read('${ctrl.currentUser.value.userId.toHexString()}_key');
-    final senderPrivateKey = CryptoUtils.rsaPrivateKeyFromPem(addHeaderFooter(
-      privateKey,
-      false,
-    ));
-    try {
-      for (var i = 0; i < chatId.length; i++) {
-        final decryptedRoomKey = e2eersa.decrypter(senderPrivateKey, roomKey[i]);
-        sendTextMessage(
-          text: text,
-          chatId: chatId[i],
-          receiverId: receiverId[i],
-          roomKey: decryptedRoomKey,
-        );
-      }
-    } catch (e) {
-      rethrow;
-    }
   }
 }

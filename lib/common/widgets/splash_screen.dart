@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 
+// --------------------------------------------------------------
+// Widget for splash screen
+// --------------------------------------------------------------
 class SplashScreen extends StatelessWidget {
   final bool loading;
   const SplashScreen({super.key, required this.loading});
@@ -8,7 +11,7 @@ class SplashScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     Widget? widget;
 
-    if(loading == true) {
+    if (loading == true) {
       widget = const SizedBox(
         height: 50,
         width: 50,
@@ -16,15 +19,13 @@ class SplashScreen extends StatelessWidget {
           color: Colors.white,
         ),
       );
-    } if(loading == false) {
+    }
+    if (loading == false) {
       widget = const SizedBox(
         height: 50,
         child: Text(
           'version 1.1',
-          style: TextStyle(
-            fontSize: 16,
-            color: Colors.white
-          ),
+          style: TextStyle(fontSize: 16, color: Colors.white),
         ),
       );
     }
@@ -42,7 +43,9 @@ class SplashScreen extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              const SizedBox(height: 50,),
+              const SizedBox(
+                height: 50,
+              ),
               Image.asset(
                 'assets/images/meetingyuk-logo-white.png',
                 height: 200,

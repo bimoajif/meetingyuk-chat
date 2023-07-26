@@ -14,12 +14,13 @@ class ChatList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     E2EE_AES aes = E2EE_AES();
+    // --------------------------------------------------------------
+    // Call "AuthController" and "ChatController"
+    // --------------------------------------------------------------
     final AuthController authController = Get.find();
-
     final ChatController ctrl = Get.find();
 
     // final ScrollController messageController = ScrollController();
-
     return Obx(() {
       SchedulerBinding.instance.addPostFrameCallback((_) {
         // messageController.jumpTo(messageController.position.maxScrollExtent);
@@ -30,7 +31,8 @@ class ChatList extends StatelessWidget {
         itemBuilder: (context, index) {
           final messageData = ctrl.messageList[index];
           DateTime timesent = DateTime.parse(messageData.timesent).toLocal();
-          final decryptedText = aes.decrypter(ctrl.selectedRoom.value.roomKey, messageData.iv, messageData.message);
+          final decryptedText = aes.decrypter(ctrl.selectedRoom.value.roomKey,
+              messageData.iv, messageData.message);
           if (messageData.senderId ==
               authController.currentUser.value.userId.toHexString()) {
             return SenderMessageBubble(

@@ -2,10 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:realtime_chat/features/auth/controller/auth_controller.dart';
 import 'package:realtime_chat/features/chat/controller/chat_controller.dart';
-import 'package:realtime_chat/features/chat/screen/chat_screen.dart';
 import 'package:realtime_chat/screen/home_screen.dart';
 
 class DetailCard extends GetView<ChatController> {
+  // --------------------------------------------------------------
+  // Mockup screen of cafe screen
+  // --------------------------------------------------------------
+
   static const String routeName = '/detail-card';
   const DetailCard({Key? key}) : super(key: key);
 

@@ -6,6 +6,9 @@ import 'package:realtime_chat/features/auth/controller/auth_controller.dart';
 import 'package:realtime_chat/features/chat/controller/chat_controller.dart';
 import 'package:realtime_chat/features/chat/screen/chat_screen.dart';
 
+// --------------------------------------------------------------
+// Home Screen for Client
+// --------------------------------------------------------------
 class ClientScreen extends GetView<ChatController> {
   const ClientScreen({super.key});
 

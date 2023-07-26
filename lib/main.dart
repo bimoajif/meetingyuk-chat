@@ -6,17 +6,27 @@ import 'package:realtime_chat/routes.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  Get.lazyPut(()=>AuthController());
+  Get.lazyPut(() => AuthController());
   final AuthController ctrl = Get.find();
+
+  // --------------------------------------------------------------
+  // Call getCollection function from AuthController
+  // --------------------------------------------------------------
   ctrl.getCollection();
-  
+
+  // --------------------------------------------------------------
+  // Initialize GetStorage to save and retrieve local data
+  // --------------------------------------------------------------
   await GetStorage.init();
+
+  // --------------------------------------------------------------
+  // Function to run App
+  // --------------------------------------------------------------
   runApp(MyApp());
 }
 
 // ignore: must_be_immutable
 class MyApp extends StatelessWidget {
-
   MaterialColor meetingyukColor = const MaterialColor(
     0xFF3880A4,
     <int, Color>{
@@ -32,7 +42,7 @@ class MyApp extends StatelessWidget {
       900: Color(0xFF2C6082),
     },
   );
-  
+
   MyApp({super.key});
 
   // This widget is the root of your application.
@@ -49,7 +59,6 @@ class MyApp extends StatelessWidget {
       defaultTransition: Transition.native,
       debugShowCheckedModeBanner: false,
       showPerformanceOverlay: false,
-      
     );
   }
 }

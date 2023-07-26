@@ -13,8 +13,15 @@ class ChatScreen extends StatefulWidget {
 }
 
 class _ChatScreenState extends State<ChatScreen> {
+  // --------------------------------------------------------------
+  // Call "ChatController"
+  // --------------------------------------------------------------
   final ChatController controller = Get.find();
 
+
+  // --------------------------------------------------------------
+  // Initial run by clearing "messageList" and start "startMessageUpdates"
+  // --------------------------------------------------------------
   @override
   void initState() {
     controller.messageList.clear();
@@ -22,10 +29,12 @@ class _ChatScreenState extends State<ChatScreen> {
     super.initState();
   }
 
+  // --------------------------------------------------------------
+  // Dispose "selectedMessage" value into [] when off the page
+  // --------------------------------------------------------------
   @override
   void dispose() {
     controller.selectedMessage.value = '';
-    controller.messageList.clear();
     super.dispose();
   }
 

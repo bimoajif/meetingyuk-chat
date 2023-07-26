@@ -1,6 +1,5 @@
 // ignore_for_file: camel_case_types
 
-import 'dart:io';
 import 'dart:math';
 import 'package:convert/convert.dart';
 import 'dart:typed_data';
@@ -8,6 +7,9 @@ import 'package:pointycastle/export.dart';
 import 'package:basic_utils/basic_utils.dart';
 
 class E2EE_RSA {
+  // --------------------------------------------------------------
+  // Generate RSA KeyPair
+  // --------------------------------------------------------------
   AsymmetricKeyPair<PublicKey, PrivateKey> generateRSAKeyPair() {
     final secureRandom = FortunaRandom();
     final seedSource = Random.secure();
@@ -24,6 +26,9 @@ class E2EE_RSA {
     return keyGenerator.generateKeyPair();
   }
 
+  // --------------------------------------------------------------
+  // Function for RSA Encryption
+  // --------------------------------------------------------------
   String encrypter(PublicKey publicKey, String text) {
     final encryptor = OAEPEncoding(RSAEngine())
       ..init(true, PublicKeyParameter<RSAPublicKey>(publicKey));
@@ -31,6 +36,9 @@ class E2EE_RSA {
     return hex.encode(chiper);
   }
 
+  // --------------------------------------------------------------
+  // Function for RSA Decryption
+  // --------------------------------------------------------------
   String decrypter(PrivateKey privateKey, String hex) {
     final decryptor = OAEPEncoding(RSAEngine())
       ..init(false, PrivateKeyParameter<RSAPrivateKey>(privateKey));
@@ -40,29 +48,9 @@ class E2EE_RSA {
   }
 }
 
-void storePEMToFile(AsymmetricKeyPair<PublicKey, PrivateKey> keyPair) {
-  String? pemPublickey =
-      CryptoUtils.encodeRSAPublicKeyToPem(keyPair.publicKey as RSAPublicKey);
-  String? pemPrivatekey =
-      CryptoUtils.encodeRSAPrivateKeyToPem(keyPair.privateKey as RSAPrivateKey);
-  File? privateKeyFile = File('key/private.pem');
-  File? publicKeyFile = File('key/public.pem');
-  try {
-    privateKeyFile.writeAsStringSync(pemPrivatekey);
-    publicKeyFile.writeAsStringSync(pemPublickey);
-  } catch (e) {
-    throw (e.toString());
-  }
-}
-
-String readFile(path) {
-  try {
-    return File(path).readAsStringSync();
-  } catch (e) {
-    throw (e.toString());
-  }
-}
-
+// --------------------------------------------------------------
+// Function to extract String from Key
+// --------------------------------------------------------------
 String extractKeyString(String keyString) {
   final items = <String>[
     '\n',
@@ -77,6 +65,10 @@ String extractKeyString(String keyString) {
   return keyString;
 }
 
+// --------------------------------------------------------------
+// Function to add String from Key
+// *this function is necessary for encryption & decryption to work
+// --------------------------------------------------------------
 String addHeaderFooter(String keyString, bool isPublicKey) {
   const pubHeader = '-----BEGIN PUBLIC KEY-----';
   const pubFooter = '-----END PUBLIC KEY-----';

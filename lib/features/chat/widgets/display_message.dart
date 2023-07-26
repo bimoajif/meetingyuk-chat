@@ -39,8 +39,8 @@ class DisplayMessage extends StatelessWidget {
                     image: Image.memory(snapshot.data!.data).image,
                     height: MediaQuery.of(context).size.width * 0.4,
                   ),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
+                  const Padding(
+                    padding: EdgeInsets.all(8.0),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [

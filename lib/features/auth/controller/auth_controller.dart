@@ -6,8 +6,10 @@ import 'package:realtime_chat/features/auth/screen/login_screen.dart';
 import 'package:realtime_chat/models/user_model.dart';
 
 class AuthController extends GetxController {
+  // --------------------------------------------------------------
+  // Define local variables
+  // --------------------------------------------------------------
   GetStorage box = GetStorage();
-
   Rx<UserModel> currentUser = UserModel(
     name: '',
     userId: ObjectId(),
@@ -16,7 +18,6 @@ class AuthController extends GetxController {
     phoneNumber: '',
     publicKey: '',
   ).obs;
-
   RxList userList = [].obs;
   var isLoading = false.obs;
 
@@ -26,6 +27,10 @@ class AuthController extends GetxController {
     super.onClose();
   }
 
+
+  // --------------------------------------------------------------
+  // Function to get user list on "users" collection
+  // --------------------------------------------------------------
   void getCollection() async {
     await db.open();
     try {
@@ -48,6 +53,10 @@ class AuthController extends GetxController {
     }
   }
 
+
+  // --------------------------------------------------------------
+  // Function to login to app
+  // --------------------------------------------------------------
   void login(
     String name,
     ObjectId userId,
@@ -70,6 +79,10 @@ class AuthController extends GetxController {
     box.write('647ca70ab3ad3097e7458a34_key', 'MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDRym2Bm0DYJidX0i1oyUnQm12vFc7qxzLitQJPLBQW6y72lUFLF0aw1OM93sIUdD60Lbznp59TsPHbNTq2Ie9KaMglHSM8hgGAz9avOeTz4ozj9IrhZjcAGvwWuj/iToKkijQwbPcUEygL9fLxA02rsE9BeXjKT50cjzCEYBXbetizI6uW34VYq/cOyK1MguDnd7v9bzbXlFslSIClY9LIZqR65vpC8Drbe/Hk6scGgkyhVyggws+dFzFjywevxPmuPysd/UBORdbeCKVhA7WkWtS+lc7WgJMyZuTB/HM2++Yx/b652cKd+Duc3dWiJIofgLI9p8cr2Hv9z3fTcZ+tAgMBAAECggEAOv1spVD+fsjbrzoOQrS26M2HHkBHmoTArjavm4uNapRe9D8ryO2WlwqFi1QjxpSZPRjPUWQ0zNeoajchdy07l/S2spjq243ixlGq0EK7OkitzTtqAc84D/OGhu2AISZqXdHust8w6pgoXpSd519Ca9B7uLFrYZfZWbp5rf9Gphv19Lyg5pwJLYUY0vTFwD2sROYjX/bdwFCu2JzFbeAxAJDIT7nwwOFq4/++SEKqvOeK2HuDkCpbuW0u62hyth5AxGz14hwVJNGyfe47dIDv5x2xzJr1kSZzL/PqPvkTEv3EZcLHEio5ceSFAr1ZICjuyU/UxYTSM3REWsvBK78AkQKBgQD/vZXYAY0kwIyyaueMF7f6MjAKbnM6enJOV6dfyyFkc5vdCMYXMKVwtZRSCkUCO3XBhGZhXkW3Ha7y/eC03ZWs1buSi3Y42fn7QHPaV/LFUcdLGfvtn0NxFjdNhabH83H3AswW5TiwmJF2DJ5yZJsKO9wIZiKzjlq+WWsRRafzXwKBgQDSAOjS0OCT6sZwQo7vdYlvethVEJeplFVZvxN1R1DzIJbd41gPGO4bJV46xsv1JJeh83RN55TE3xT/p3A2R3l/mOuyl0dqIT0kW9WtRMvAXfILo6VaIR9mXovNbfdJaIj/hx0HSFvIcqz4B3aDOfPCbZTMOC9zaPIL5PXSTnA0cwKBgQCBWOc/8FDuBMFkwDNKpPh1gArSS9jV+/Zyb10FU10ZTGvJ2NUwB3e10PEqqW0L2v0NGqUZnC/QlR/WYNfVQrmgSB3t2cG6sW0BSjEOfysX5+vPrV3BaqsWuHDSMcYQHa5Hi8+jyN3qW9A+j9VX8FCGVY5NZTMp89crrVg8zSlMKwKBgAnUuRGFbb3+86M1unNDUVfCrHXu/OqXYxd8dnC7EfMPx4BDsE+knyDuMucVf17Og7q1JvCusqw0tUryj7I6zllG02Hc6x7wx2f4VJxz6AXtX/Njic4aVtn3+xt21mi9WAx+SsGYhZNwquBBmS6ze9HSR3D4AGCqvQoJgeiCe4Y5AoGAOVwU9c7sfooDfA5r7XmjAeBkVf9zJIg/WAJpuBs20qYcdZaNVSls6VojTJz/kQIGU8T+SaL9eIshWCsqzYGM0SGWLBnrQNmhDCEVijWVQtTFoOIw0dxA4m/4KhBGt5ZOwG7WA+TqYz6TbNtfSI2NELi7CuUCfWXR52P+3GpbhEg=');
   }
 
+
+  // --------------------------------------------------------------
+  // Function to logout from app
+  // --------------------------------------------------------------
   void logout() {
     box.remove('currentUser');
     currentUser.value = UserModel(

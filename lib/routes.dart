@@ -8,6 +8,9 @@ import 'package:realtime_chat/features/chat/screen/chat_screen.dart';
 import 'package:realtime_chat/screen/home_screen.dart';
 
 class Routes {
+  // --------------------------------------------------------------
+  // Class of app routes
+  // --------------------------------------------------------------
   static List<GetPage> pages() => [
         GetPage(
           name: LoginScreen.routeName,

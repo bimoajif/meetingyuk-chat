@@ -1,16 +1,45 @@
-# realtime_chat
+# MeetingYuk Chat System
 
-A new Flutter project.
+## Info
 
-## Getting Started
+- This code is originally written by [Bimo Aji Fajrianto](https://github.com/bimoajif/meetingyuk-chat).
 
-This project is a starting point for a Flutter application.
+## How to Use
+*** make sure you already has Flutter installed to your machine
 
-A few resources to get you started if this is your first Flutter project:
+### 1. Clone to your local repository
+```
+git clone https://github.com/bimoajif/meetingyuk-chat.git
+```
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+### 2. Get all dependency
+```
+flutter pub add
+```
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+### 3. Run project
+```
+flutter run
+```
+
+### ❗️❗️❗️ IMPORTANT
+change endpoint Address and MongoDB address to your own which located on:
+```
+|-- lib/
+    |-- common/
+        |-- util.dart
+    |-- features/
+        |-- chat
+            |-- chat_controller.dart
+```
+
+## Content
+
+All feature structure are divided into 3 folders: Controller, Screen, Widget.
+```
+|-- Controller --> Consists of all function related to feature to be called by screen / widget
+|-- Screen --> Consist of all screen related to feature
+|-- Widget --> widgets / additional function of feature
+```
+
+

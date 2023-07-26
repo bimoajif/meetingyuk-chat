@@ -15,6 +15,9 @@ class AES_Key {
 }
 
 class E2EE_AES {
+  // --------------------------------------------------------------
+  // Generate AES KeyPair
+  // --------------------------------------------------------------
   AES_Key generateAESKey() {
     final key = Key.fromSecureRandom(16);
     final iv = IV.fromSecureRandom(8);
@@ -25,6 +28,9 @@ class E2EE_AES {
     return AES_Key(key: keyString, iv: ivString);
   }
 
+  // --------------------------------------------------------------
+  // Function for AES Encryption
+  // --------------------------------------------------------------
   String encrypter(String savedKey, String savedIv, String text) {
     final key = Key.fromBase64(savedKey);
     final iv = IV.fromBase64(savedIv);
@@ -37,6 +43,9 @@ class E2EE_AES {
     return cipherHexString;
   }
 
+  // --------------------------------------------------------------
+  // Function for AES Decryption
+  // --------------------------------------------------------------
   String decrypter(String savedKey, String savedIv, String cipher) {
     final encryptedBytes = hex.decode(cipher);
 

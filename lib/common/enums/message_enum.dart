@@ -1,5 +1,8 @@
 // ignore_for_file: constant_identifier_names
 
+// --------------------------------------------------------------
+// Enum class for message type
+// --------------------------------------------------------------
 enum MessageEnum {
   TEXT('text'),
   IMAGE('image'),

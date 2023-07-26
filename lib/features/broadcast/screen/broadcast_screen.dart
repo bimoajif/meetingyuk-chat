@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:realtime_chat/common/widgets/custom_button.dart';
 import 'package:realtime_chat/features/auth/controller/auth_controller.dart';
+import 'package:realtime_chat/features/broadcast/controller/broadcast_controller.dart';
 import 'package:realtime_chat/features/chat/controller/chat_controller.dart';
 
 class BroadcastScreen extends StatefulWidget {
@@ -13,14 +14,24 @@ class BroadcastScreen extends StatefulWidget {
 }
 
 class _BroadcastScreenState extends State<BroadcastScreen> {
+  // --------------------------------------------------------------
+  // Define local variables
+  // --------------------------------------------------------------
   List selectedReceiver = [];
   List selectedChat = [];
   List selectedKey = [];
   final TextEditingController _messageController = TextEditingController();
 
+  // --------------------------------------------------------------
+  // Call "AuthController" and "ChatController"
+  // --------------------------------------------------------------
   final AuthController ctrl = Get.find();
   final ChatController controller = Get.find();
+  final BroadcastController broadcastController = Get.find();
 
+  // --------------------------------------------------------------
+  // Function to select broadcast user receivers
+  // --------------------------------------------------------------
   void onReceiverSelected(bool selected, chatId, receiverId, roomKey) {
     if (selected == true) {
       setState(() {
@@ -37,10 +48,6 @@ class _BroadcastScreenState extends State<BroadcastScreen> {
     }
   }
 
-  bool isCheckedA = false;
-  bool isCheckedB = false;
-  bool isCheckedC = false;
-  bool isCheckedD = false;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -93,6 +100,10 @@ class _BroadcastScreenState extends State<BroadcastScreen> {
                 height: MediaQuery.of(context).size.height * 0.03,
               ),
               const Text('Pilih tujuan pesan:'),
+
+              // --------------------------------------------------------------
+              // Widget to view list of receivers
+              // --------------------------------------------------------------
               ListView.builder(
                 physics: const NeverScrollableScrollPhysics(),
                 shrinkWrap: true,
@@ -117,7 +128,10 @@ class _BroadcastScreenState extends State<BroadcastScreen> {
                           .contains(controller.chatRoomList[index].chatId),
                       onChanged: (val) {
                         onReceiverSelected(
-                            val!, controller.chatRoomList[index].chatId, recipientUser.userId, currentUser.roomKey);
+                            val!,
+                            controller.chatRoomList[index].chatId,
+                            recipientUser.userId,
+                            currentUser.roomKey);
                       },
                     ),
                   );
@@ -128,17 +142,28 @@ class _BroadcastScreenState extends State<BroadcastScreen> {
                 child: CustomButton(
                     text: 'KIRIM',
                     onpressed: () {
-                      if (_messageController.text == '' || selectedChat.isEmpty) {
+
+                      // --------------------------------------------------------------
+                      // Call this when button is pressed
+                      // --------------------------------------------------------------
+                      if (_messageController.text == '' ||
+                          selectedChat.isEmpty) {
                         Get.defaultDialog(
                           title: 'Gagal',
-                          content: const Text('Silakan isi teks pesan dan pilih tujuan pesan'),
+                          content: const Text(
+                              'Silakan isi teks pesan dan pilih tujuan pesan'),
                         );
                       } else {
-                        controller.sendBroadcastMessage(text: _messageController.text, chatId: selectedChat, receiverId: selectedReceiver, roomKey: selectedKey);
+                        broadcastController.sendBroadcastMessage(
+                            text: _messageController.text,
+                            chatId: selectedChat,
+                            receiverId: selectedReceiver,
+                            roomKey: selectedKey);
                         Get.back();
                         Get.defaultDialog(
                           title: 'Success',
-                          content: Text('Pesan Broadcast Berhasil Dikirim!'),
+                          content:
+                              const Text('Pesan Broadcast Berhasil Dikirim!'),
                         );
                       }
                     }),

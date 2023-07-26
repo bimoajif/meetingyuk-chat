@@ -31,6 +31,9 @@ class LoginScreen extends GetView<AuthController> {
                   itemBuilder: (context, index) {
                     return InkWell(
                       onTap: () {
+                        // --------------------------------------------------------------
+                        // When pressed, login function is called
+                        // --------------------------------------------------------------
                         controller.login(
                           controller.userList[index].name,
                           controller.userList[index].userId,
@@ -39,7 +42,9 @@ class LoginScreen extends GetView<AuthController> {
                           controller.userList[index].phoneNumber,
                           controller.userList[index].publicKey,
                         );
-                        controller.currentUser.value.isMerchant == true ? Get.offAndToNamed(HomeScreen.routeName) : Get.offAndToNamed(DetailCard.routeName);
+                        controller.currentUser.value.isMerchant == true
+                            ? Get.offAndToNamed(HomeScreen.routeName)
+                            : Get.offAndToNamed(DetailCard.routeName);
                       },
                       child: Padding(
                         padding: const EdgeInsets.symmetric(
@@ -51,8 +56,8 @@ class LoginScreen extends GetView<AuthController> {
                             height: 50.0,
                             width: 50.0,
                             child: CircleAvatar(
-                              backgroundImage: NetworkImage(controller.userList[index].profilePic)
-                            ),
+                                backgroundImage: NetworkImage(
+                                    controller.userList[index].profilePic)),
                           ),
                           title: Text(
                             controller.userList[index].name,

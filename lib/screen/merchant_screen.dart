@@ -8,6 +8,9 @@ import 'package:realtime_chat/features/broadcast/screen/broadcast_screen.dart';
 import 'package:realtime_chat/features/chat/controller/chat_controller.dart';
 import 'package:realtime_chat/features/chat/screen/chat_screen.dart';
 
+// --------------------------------------------------------------
+// Home Screen for Merchant
+// --------------------------------------------------------------
 class MerchantScreen extends GetView<ChatController> {
   const MerchantScreen({super.key});
 

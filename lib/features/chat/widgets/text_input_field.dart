@@ -22,11 +22,12 @@ class TextInputField extends StatefulWidget {
 class _TextInputFieldState extends State<TextInputField> {
   bool isShowSendButton = false;
   final TextEditingController _messageController = TextEditingController();
-
   final ChatController ctrl = Get.find();
-
   Color sendButtonColor = Colors.grey;
 
+  // --------------------------------------------------------------
+  // Function to send message, called when send button is pushed
+  // --------------------------------------------------------------
   void sendTextMessage() async {
     if (isShowSendButton) {
       if (_messageController.text.trim() != '') {
@@ -40,7 +41,8 @@ class _TextInputFieldState extends State<TextInputField> {
           _messageController.text = '';
         });
       } else {
-        Get.defaultDialog(title: 'ERROR', content: const Text('message cannot be empty!'));
+        Get.defaultDialog(
+            title: 'ERROR', content: const Text('message cannot be empty!'));
       }
     }
   }
@@ -117,6 +119,9 @@ class _TextInputFieldState extends State<TextInputField> {
           fontSize: 14,
         ),
         suffixIcon: GestureDetector(
+          // --------------------------------------------------------------
+          // Call sendTextMessage function when pressed
+          // --------------------------------------------------------------
           onTap: sendTextMessage,
           child: Container(
             height: 70,
