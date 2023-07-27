@@ -113,13 +113,13 @@ class _BroadcastScreenState extends State<BroadcastScreen> {
                       controller.chatRoomList[index].users.firstWhere(
                     (user) =>
                         user.userId !=
-                        ctrl.currentUser.value.userId.toHexString(),
+                        ctrl.currentUser.value.userId,
                   );
                   final currentUser =
                       controller.chatRoomList[index].users.firstWhere(
                     (user) =>
                         user.userId ==
-                        ctrl.currentUser.value.userId.toHexString(),
+                        ctrl.currentUser.value.userId,
                   );
                   return ListTile(
                     title: Text(recipientUser.name),

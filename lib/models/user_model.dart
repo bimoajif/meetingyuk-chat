@@ -2,7 +2,7 @@ import 'package:mongo_dart/mongo_dart.dart';
 
 class UserModel {
   final String name;
-  final ObjectId userId;
+  final String userId;
   final String profilePic;
   final bool isMerchant;
   final String phoneNumber;
@@ -38,4 +38,16 @@ class UserModel {
       publicKey: user['publicKey'],
     );
   }
+}
+
+class UserLocationModel{
+  double latitude;
+  double longitude;
+  double maxRadius;
+
+  UserLocationModel({
+    required this.latitude,
+    required this.longitude,
+    required this.maxRadius,
+  });
 }

@@ -1,20 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:realtime_chat/colors.dart';
 import 'package:realtime_chat/features/auth/controller/auth_controller.dart';
 import 'package:realtime_chat/features/chat/controller/chat_controller.dart';
+import 'package:realtime_chat/features/recommendation/controller/recommendation_controller.dart';
 import 'package:realtime_chat/screen/home_screen.dart';
 
 class DetailCard extends GetView<ChatController> {
-  // --------------------------------------------------------------
-  // Mockup screen of cafe screen
-  // --------------------------------------------------------------
-
   static const String routeName = '/detail-card';
   const DetailCard({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     final AuthController authCtrl = Get.find();
+    final RecommendationController recCtrl = Get.find();
     Get.put(ChatController());
     return Scaffold(
       body: CustomScrollView(
@@ -35,7 +34,7 @@ class DetailCard extends GetView<ChatController> {
             pinned: true,
             flexibleSpace: FlexibleSpaceBar(
               background: Image.network(
-                'https://assets.ayobandung.com/crop/0x0:0x0/x/photo/2023/03/05/cronica-1-2935488603.png',
+                recCtrl.selectedMerchant.value.imageUrl,
                 height: 215,
                 width: double.infinity,
                 fit: BoxFit.cover,
@@ -75,21 +74,23 @@ class DetailCard extends GetView<ChatController> {
                         ],
                       ),
                       const SizedBox(height: 4),
-                      const Text(
-                        'MeetingYuk Creative Workspace',
+                      Text(
+                        recCtrl.selectedMerchant.value.name,
+                        style: const TextStyle(
+                            fontSize: 24, fontWeight: FontWeight.w800),
                       ),
                       const SizedBox(height: 3),
-                      const Row(
+                      Row(
                         children: [
-                          Icon(
+                          const Icon(
                             Icons.location_on_sharp,
                             size: 12,
                           ),
-                          SizedBox(
+                          const SizedBox(
                             width: 2,
                           ),
                           Text(
-                            'Jl.A.M Sangaji No 62,Jetis,Blunyahrejo',
+                            recCtrl.selectedMerchant.value.address,
                           )
                         ],
                       ),
@@ -135,12 +136,11 @@ class DetailCard extends GetView<ChatController> {
                           //     'yOclKH/Ed6otKri0mY4oJg=='
                           //   );
                           controller.initiateChat(
-                              '6483d337f01834844d91a7a3',
-                              'MeetingYuk Creative Workspace',
-                              'https://assets.ayobandung.com/crop/0x0:0x0/x/photo/2023/03/05/cronica-1-2935488603.png',
+                              recCtrl.selectedMerchant.value.id,
+                              recCtrl.selectedMerchant.value.name,
+                              recCtrl.selectedMerchant.value.imageUrl,
                               authCtrl.currentUser.value.publicKey,
-                              'MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAh9li1m0VWUjN2wZiCX46k9U3aAgfJ6WKkW0Y6MP30n2ajScZUFqj2eB3w7qHyLJAXVAxXe0E2sxtO20mRphOtv91fRjWj2nLXGKi//jZb/JewZvvgXRIi5JAZQlL5ChrBpNf8RRFscj2HzBNyNlZd0GrOwYoyf8+fSGO8Sj4tDrcq0FctCEqww7eUEP8+4VKOYSnwmMtnowxmeEv6hNUz0hHx2qiT425YtOIwRB0H5B773oTsZH9o04343ZlU+8H/3TEU1QA/OZU+S45jc6tmy9cmS+wulsyB1ps3XMAorvVkDcEBZTvJGr2iO/R4pfT8DW0PtzqwcWxiqkn40ZnZQIDAQAB'
-                              );
+                              'MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAh9li1m0VWUjN2wZiCX46k9U3aAgfJ6WKkW0Y6MP30n2ajScZUFqj2eB3w7qHyLJAXVAxXe0E2sxtO20mRphOtv91fRjWj2nLXGKi//jZb/JewZvvgXRIi5JAZQlL5ChrBpNf8RRFscj2HzBNyNlZd0GrOwYoyf8+fSGO8Sj4tDrcq0FctCEqww7eUEP8+4VKOYSnwmMtnowxmeEv6hNUz0hHx2qiT425YtOIwRB0H5B773oTsZH9o04343ZlU+8H/3TEU1QA/OZU+S45jc6tmy9cmS+wulsyB1ps3XMAorvVkDcEBZTvJGr2iO/R4pfT8DW0PtzqwcWxiqkn40ZnZQIDAQAB');
                           Get.toNamed(HomeScreen.routeName);
                           // Get.toNamed(ChatScreen.routeName);
                         },
@@ -172,6 +172,57 @@ class DetailCard extends GetView<ChatController> {
                 ),
                 const SizedBox(
                   height: 9,
+                ),
+                Container(
+                  margin: const EdgeInsets.only(
+                      left: 7.5, right: 7.5, top: 10, bottom: 15),
+                  padding: const EdgeInsets.only(
+                    left: 16,
+                    top: 15,
+                    right: 16,
+                    bottom: 15,
+                  ),
+                  decoration: BoxDecoration(
+                      boxShadow: const [
+                        BoxShadow(
+                            color: Colors.black26,
+                            blurRadius: 4,
+                            spreadRadius: 0,
+                            offset: Offset(0, 4.0))
+                      ],
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(10)),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      const Icon(
+                        Icons.person_pin_circle,
+                        size: 64,
+                        color: primaryColor,
+                      ),
+                      const SizedBox(
+                        width: 6,
+                      ),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            'Distance From You:',
+                          ),
+                          const SizedBox(
+                            width: 6,
+                          ),
+                          Text(
+                            "${recCtrl.selectedMerchant.value.distance.toStringAsFixed(1)} km",
+                            style: const TextStyle(
+                              fontWeight: FontWeight.w800,
+                              fontSize: 24
+                            ),
+                          ),
+                        ],
+                      )
+                    ],
+                  ),
                 ),
                 Container(
                   margin: const EdgeInsets.only(
@@ -326,9 +377,9 @@ class DetailCard extends GetView<ChatController> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
-                            const Flexible(
+                            Flexible(
                               child: Text(
-                                'Jl. A.M. Sangaji No.62, Cokrodiningratan, Jetis, Yogyakarta City, Special Region of Yogyakarta 55233',
+                                recCtrl.selectedMerchant.value.address,
                               ),
                             ),
                             InkWell(

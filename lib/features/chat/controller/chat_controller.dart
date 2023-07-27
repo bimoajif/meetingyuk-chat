@@ -16,36 +16,46 @@ import 'package:realtime_chat/models/chat_room_model.dart';
 import 'package:realtime_chat/models/message_model.dart';
 
 class ChatController extends GetxController {
-  // --------------------------------------------------------------
-  // Define local variables
-  // --------------------------------------------------------------
-  final String endpoint = ENDPOINT_URL; // Change this to valid endpoint
+  // The endpoint for the chat API
+  final String endpoint = ENDPOINT_URL;
+
+  // The HTTP client for making requests
   final Dio dio = Dio();
+
   final e2ee = E2EE_AES();
   final e2eersa = E2EE_RSA();
+
+  // Local storage for storing user data and other persistent data
   GetStorage box = GetStorage();
+
+  // Authentication controller for accessing user data
   late AuthController ctrl;
+
+  // Timer for updating chats and messages
   Timer? chatUpdateTimer;
   Timer? messageUpdateTimer;
 
-  // --------------------------------------------------------------
-  // Initial run start listing chatRooms
-  // --------------------------------------------------------------
   @override
   void onInit() {
     super.onInit();
+
+    // Get the instance of the AuthController
     ctrl = Get.find();
-    startChatUpdates(ctrl.currentUser.value.userId.toHexString());
+
+    // Start periodic updates for the chat
+    startChatUpdates(ctrl.currentUser.value.userId);
   }
 
-  // --------------------------------------------------------------
-  // Create a local variable to store chatRooms, messages,
-  // selectedMessage, receiverUser, selectedRoom
-  // --------------------------------------------------------------
+  // Observable list of chat rooms
   RxList<ChatRoomModel> chatRoomList = <ChatRoomModel>[].obs;
+
+  // Observable list of messages
   RxList<MessageModel> messageList = <MessageModel>[].obs;
+
+  // Observable for the currently selected message
   RxString selectedMessage = ''.obs;
 
+  // Observable for the user we're currently chatting with
   Rx<UserChatRoom> receiverUser = UserChatRoom(
     userId: '',
     name: '',
@@ -53,6 +63,7 @@ class ChatController extends GetxController {
     roomKey: '',
   ).obs;
 
+  // Observable for the currently selected chat room
   Rx<ChatRoomModel> selectedRoom = ChatRoomModel(
     chatId: '',
     lastMessage: '',
@@ -61,15 +72,14 @@ class ChatController extends GetxController {
     timesent: '',
   ).obs;
 
-  // --------------------------------------------------------------
-  // Function to start updating list of chatRooms
-  // --------------------------------------------------------------
+  // Starts a periodic task to update the chat rooms
   void startChatUpdates(String id) {
     chatUpdateTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
       getChat(id);
     });
   }
 
+  // Fetches the list of chat rooms for the given user ID
   Stream<List<ChatRoomModel>> getChat(String id) {
     StreamController<List<ChatRoomModel>> streamController = StreamController();
 
@@ -91,9 +101,7 @@ class ChatController extends GetxController {
     return streamController.stream;
   }
 
-  // --------------------------------------------------------------
-  // Function to start updating list of messages
-  // --------------------------------------------------------------
+  // Starts a periodic task to update the messages for the given chat room ID
   void startMessageUpdates(RxString id) {
     messageUpdateTimer =
         Timer.periodic(const Duration(milliseconds: 500), (timer) {
@@ -101,6 +109,7 @@ class ChatController extends GetxController {
     });
   }
 
+  // Fetches the list of messages for the given chat room ID
   Stream<List<MessageModel>> getMessage(RxString id) {
     StreamController<List<MessageModel>> streamController = StreamController();
 
@@ -131,9 +140,7 @@ class ChatController extends GetxController {
     return streamController.stream;
   }
 
-  // --------------------------------------------------------------
-  // Function to initiate chat with merchant or user
-  // --------------------------------------------------------------
+  // Initializes a chat with the given user
   void initiateChat(String userId, String name, String profilePic,
       String userPublicKey, String recipientPublicKey) async {
     final key = e2ee.generateAESKey();
@@ -157,7 +164,7 @@ class ChatController extends GetxController {
       "timesent": timeSent,
       "users": [
         {
-          "userId": ctrl.currentUser.value.userId.toHexString(),
+          "userId": ctrl.currentUser.value.userId,
           "username": ctrl.currentUser.value.name,
           "profilePic": ctrl.currentUser.value.profilePic,
           "roomKey": userRoomKey,
@@ -180,9 +187,7 @@ class ChatController extends GetxController {
     }
   }
 
-  // --------------------------------------------------------------
-  // Function to select a chat from list
-  // --------------------------------------------------------------
+  // Selects a chat room and loads its messages
   void selectChat(
     String chatId,
     String userId,
@@ -190,8 +195,7 @@ class ChatController extends GetxController {
     String profilePic,
     String roomKey,
   ) {
-    final privateKey =
-        box.read('${ctrl.currentUser.value.userId.toHexString()}_key');
+    final privateKey = box.read('${ctrl.currentUser.value.userId}_key');
     final senderPrivateKey = CryptoUtils.rsaPrivateKeyFromPem(addHeaderFooter(
       privateKey,
       false,
@@ -213,9 +217,7 @@ class ChatController extends GetxController {
     );
   }
 
-  // --------------------------------------------------------------
-  // Function to save sent message to "chats" collection
-  // --------------------------------------------------------------
+  // Saves a new message to the chat room collection
   void saveDataToChat(
     String receiverId,
     String chatId,
@@ -225,20 +227,17 @@ class ChatController extends GetxController {
     DateFormat dateFormat = DateFormat('yyyy-MM-dd HH:mm:ss');
     String timeSent = dateFormat.format(DateTime.now());
     try {
-      collection.updateOne(where.eq('_id', ObjectId.fromHexString(chatId)),
-          modify.set('lastMessage', text));
-      collection.updateOne(where.eq('_id', ObjectId.fromHexString(chatId)),
-          modify.set('timesent', timeSent));
-      // print(chatId);
-      // await dio.put('$endpoint/$chatId', data: {'lastMessage': text});
+      // collection.updateOne(where.eq('_id', ObjectId.fromHexString(chatId)),
+      //     modify.set('lastMessage', text));
+      // collection.updateOne(where.eq('_id', ObjectId.fromHexString(chatId)),
+      //     modify.set('timesent', timeSent));
+      await dio.put('$endpoint/chat/$chatId', data: {"text": text});
     } catch (e) {
       rethrow;
     }
   }
 
-  // --------------------------------------------------------------
-  // Function to save sent message to "message" collection
-  // --------------------------------------------------------------
+  // Saves a new message to the message collection
   void saveDataToMessage(
     String chatId,
     String message,
@@ -265,9 +264,7 @@ class ChatController extends GetxController {
     }
   }
 
-  // --------------------------------------------------------------
   // Function to send text message
-  // --------------------------------------------------------------
   void sendTextMessage({
     required String text,
     required String chatId,
@@ -281,7 +278,7 @@ class ChatController extends GetxController {
       chatId,
       encryptedText,
       receiverId,
-      ctrl.currentUser.value.userId.toHexString(),
+      ctrl.currentUser.value.userId,
       iv,
       MessageEnum.TEXT,
     );

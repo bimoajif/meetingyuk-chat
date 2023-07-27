@@ -7,15 +7,20 @@ import 'package:realtime_chat/features/auth/controller/auth_controller.dart';
 import 'package:realtime_chat/features/chat/controller/chat_controller.dart';
 
 class BroadcastController extends GetxController  {
+
+  // Storage for storing user data locally.
   GetStorage box = GetStorage();
+
+  // Authentication controller for accessing user data
   late AuthController ctrl;
+
+  // Chat controller for accessing chat data
   late ChatController controller;
+
   final e2ee = E2EE_AES();
   final e2eersa = E2EE_RSA();
 
-  // --------------------------------------------------------------
-  // Function to send broadcast message
-  // --------------------------------------------------------------
+  // method to send broadcast message
   void sendBroadcastMessage({
     required String text,
     required List chatId,
@@ -23,7 +28,7 @@ class BroadcastController extends GetxController  {
     required List roomKey,
   }) {
     final privateKey =
-        box.read('${ctrl.currentUser.value.userId.toHexString()}_key');
+        box.read('${ctrl.currentUser.value.userId}_key');
     final senderPrivateKey = CryptoUtils.rsaPrivateKeyFromPem(addHeaderFooter(
       privateKey,
       false,

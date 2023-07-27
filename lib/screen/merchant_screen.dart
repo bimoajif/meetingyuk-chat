@@ -50,12 +50,12 @@ class MerchantScreen extends GetView<ChatController> {
                     final recipientUser = chatContactData.users.firstWhere(
                       (user) =>
                           user.userId !=
-                          ctrl.currentUser.value.userId.toHexString(),
+                          ctrl.currentUser.value.userId,
                     );
                     final currentUser = chatContactData.users.firstWhere(
                       (user) =>
                           user.userId ==
-                          ctrl.currentUser.value.userId.toHexString(),
+                          ctrl.currentUser.value.userId,
                     );
                     DateTime timesent =
                         DateTime.parse(chatContactData.timesent);

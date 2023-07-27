@@ -34,7 +34,7 @@ class ChatList extends StatelessWidget {
           final decryptedText = aes.decrypter(ctrl.selectedRoom.value.roomKey,
               messageData.iv, messageData.message);
           if (messageData.senderId ==
-              authController.currentUser.value.userId.toHexString()) {
+              authController.currentUser.value.userId) {
             return SenderMessageBubble(
               message: decryptedText,
               time: DateFormat('HH:mm').format(timesent),

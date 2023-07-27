@@ -4,6 +4,7 @@ import 'package:get_storage/get_storage.dart';
 import 'package:realtime_chat/common/utils/util.dart';
 import 'package:realtime_chat/detail_cafe.dart';
 import 'package:realtime_chat/features/auth/controller/auth_controller.dart';
+import 'package:realtime_chat/features/recommendation/screen/recommendation_screen.dart';
 import 'package:realtime_chat/screen/home_screen.dart';
 
 class LoginScreen extends GetView<AuthController> {
@@ -31,9 +32,6 @@ class LoginScreen extends GetView<AuthController> {
                   itemBuilder: (context, index) {
                     return InkWell(
                       onTap: () {
-                        // --------------------------------------------------------------
-                        // When pressed, login function is called
-                        // --------------------------------------------------------------
                         controller.login(
                           controller.userList[index].name,
                           controller.userList[index].userId,
@@ -42,9 +40,10 @@ class LoginScreen extends GetView<AuthController> {
                           controller.userList[index].phoneNumber,
                           controller.userList[index].publicKey,
                         );
-                        controller.currentUser.value.isMerchant == true
-                            ? Get.offAndToNamed(HomeScreen.routeName)
-                            : Get.offAndToNamed(DetailCard.routeName);
+                        Get.offAndToNamed(RecommendationScreen.routeName);
+                        // controller.currentUser.value.isMerchant == true
+                        //     ? Get.offAndToNamed(HomeScreen.routeName)
+                        //     : Get.offAndToNamed(DetailCard.routeName);
                       },
                       child: Padding(
                         padding: const EdgeInsets.symmetric(

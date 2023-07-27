@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:realtime_chat/features/auth/controller/auth_controller.dart';
@@ -12,7 +13,7 @@ void main() async {
   // --------------------------------------------------------------
   // Call getCollection function from AuthController
   // --------------------------------------------------------------
-  ctrl.getCollection();
+  // ctrl.getCollection();
 
   // --------------------------------------------------------------
   // Initialize GetStorage to save and retrieve local data
@@ -22,6 +23,7 @@ void main() async {
   // --------------------------------------------------------------
   // Function to run App
   // --------------------------------------------------------------
+  ctrl.checkLocationPermission();
   runApp(MyApp());
 }
 

@@ -51,6 +51,9 @@ dependencies:
   flutter_animate: ^4.1.1+1
   encrypt: ^5.0.1
   objectid: ^2.1.0
+  geolocator: ^9.0.2
+  geocoding: ^2.1.0
+  google_maps_flutter: ^2.4.0
 
 dev_dependencies:
   flutter_test:

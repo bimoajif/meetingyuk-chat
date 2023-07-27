@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:logger/logger.dart';
 import 'package:mongo_dart/mongo_dart.dart';
+import 'package:realtime_chat/common/utils/address.dart';
 
 // --------------------------------------------------------------
 // MongoDB address
 // --------------------------------------------------------------
-Db db = Db(
-    'mongodb://bimoajif:12345@cluster0-shard-00-00.vjy66.mongodb.net:27017,cluster0-shard-00-01.vjy66.mongodb.net:27017,cluster0-shard-00-02.vjy66.mongodb.net:27017/meetingyuk-chat?ssl=true&replicaSet=atlas-13ew1s-shard-0&authSource=admin&retryWrites=true&w=majority');
+Db db = Db(MONGODB_URL);
 
 // --------------------------------------------------------------
 // Widget for Loader when apps in state of loading
