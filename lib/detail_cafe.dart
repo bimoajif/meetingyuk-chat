@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
 import 'package:realtime_chat/colors.dart';
 import 'package:realtime_chat/features/auth/controller/auth_controller.dart';
 import 'package:realtime_chat/features/chat/controller/chat_controller.dart';
+import 'package:realtime_chat/features/chat/screen/chat_screen.dart';
 import 'package:realtime_chat/features/recommendation/controller/recommendation_controller.dart';
 import 'package:realtime_chat/screen/home_screen.dart';
 
@@ -84,18 +86,22 @@ class DetailCard extends GetView<ChatController> {
                         children: [
                           const Icon(
                             Icons.location_on_sharp,
-                            size: 12,
+                            size: 24,
                           ),
                           const SizedBox(
                             width: 2,
                           ),
-                          Text(
-                            recCtrl.selectedMerchant.value.address,
+                          Expanded(
+                            child: Text(
+                              recCtrl.selectedMerchant.value.address,
+                              overflow: TextOverflow.clip,
+                              maxLines: 2,
+                            ),
                           )
                         ],
                       ),
                       const SizedBox(height: 3),
-                      const Row(
+                      Row(
                         children: [
                           Icon(
                             Icons.star_rounded,
@@ -121,28 +127,46 @@ class DetailCard extends GetView<ChatController> {
                             width: 5,
                           ),
                           Text(
-                            '4.4/5,0',
+                            '${recCtrl.selectedMerchant.value.ratings} / 5,0',
                           )
                         ],
                       ),
                       const SizedBox(height: 4),
                       InkWell(
                         onTap: () {
-                          // controller.selectChat(
-                          //     '64845ab7f01834844d91a7a6',
-                          //     '6483d337f01834844d91a7a3',
-                          //     'MeetingYuk Creative Workspace',
-                          //     'https://assets.ayobandung.com/crop/0x0:0x0/x/photo/2023/03/05/cronica-1-2935488603.png',
-                          //     'yOclKH/Ed6otKri0mY4oJg=='
-                          //   );
-                          controller.initiateChat(
-                              recCtrl.selectedMerchant.value.id,
-                              recCtrl.selectedMerchant.value.name,
-                              recCtrl.selectedMerchant.value.imageUrl,
-                              authCtrl.currentUser.value.publicKey,
-                              'MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAh9li1m0VWUjN2wZiCX46k9U3aAgfJ6WKkW0Y6MP30n2ajScZUFqj2eB3w7qHyLJAXVAxXe0E2sxtO20mRphOtv91fRjWj2nLXGKi//jZb/JewZvvgXRIi5JAZQlL5ChrBpNf8RRFscj2HzBNyNlZd0GrOwYoyf8+fSGO8Sj4tDrcq0FctCEqww7eUEP8+4VKOYSnwmMtnowxmeEv6hNUz0hHx2qiT425YtOIwRB0H5B773oTsZH9o04343ZlU+8H/3TEU1QA/OZU+S45jc6tmy9cmS+wulsyB1ps3XMAorvVkDcEBZTvJGr2iO/R4pfT8DW0PtzqwcWxiqkn40ZnZQIDAQAB');
-                          Get.toNamed(HomeScreen.routeName);
-                          // Get.toNamed(ChatScreen.routeName);
+                          controller
+                              .getChatId(recCtrl.selectedMerchant.value.name)
+                              .then((result) {
+                            if (result['chatId'] == 'NOT FOUND') {
+                              controller.initiateChat(
+                                recCtrl.selectedMerchant.value.id,
+                                recCtrl.selectedMerchant.value.name,
+                                recCtrl.selectedMerchant.value.imageUrl,
+                                // '9lCb0V9FVtvI9qHuZhJmqw',
+                                // 'MeetingYuk Creative Workspace',
+                                // 'https://assets.ayobandung.com/crop/0x0:0x0/x/photo/2023/03/05/cronica-1-2935488603.png',
+                                authCtrl.currentUser.value.isMerchant == 0
+                                    ? dotenv.get('USER_PUBKEY', fallback: "0")
+                                    : dotenv.get('MERCHANT_PUBKEY',
+                                        fallback: "0"),
+                                dotenv.get('MERCHANT_PUBKEY', fallback: "0"),
+                              );
+                              Get.toNamed(HomeScreen.routeName);
+                            } else {
+                              controller.selectChat(
+                                result['chatId'],
+                                recCtrl.selectedMerchant.value.id,
+                                recCtrl.selectedMerchant.value.name,
+                                recCtrl.selectedMerchant.value.imageUrl,
+                                // '9lCb0V9FVtvI9qHuZhJmqw',
+                                // 'MeetingYuk Creative Workspace',
+                                // 'https://assets.ayobandung.com/crop/0x0:0x0/x/photo/2023/03/05/cronica-1-2935488603.png',
+                                result['roomKey'],
+                              );
+                              Get.toNamed(HomeScreen.routeName);
+                              Get.toNamed(ChatScreen.routeName);
+                            }
+                          });
                         },
                         child: const Padding(
                           padding: EdgeInsets.symmetric(vertical: 10.0),
@@ -215,9 +239,7 @@ class DetailCard extends GetView<ChatController> {
                           Text(
                             "${recCtrl.selectedMerchant.value.distance.toStringAsFixed(1)} km",
                             style: const TextStyle(
-                              fontWeight: FontWeight.w800,
-                              fontSize: 24
-                            ),
+                                fontWeight: FontWeight.w800, fontSize: 24),
                           ),
                         ],
                       )

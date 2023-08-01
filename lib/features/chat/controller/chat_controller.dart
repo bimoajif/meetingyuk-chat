@@ -1,25 +1,26 @@
+// ignore_for_file: non_constant_identifier_names
+
 import 'dart:async';
 import 'package:basic_utils/basic_utils.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:intl/intl.dart';
-import 'package:mongo_dart/mongo_dart.dart';
 import 'package:realtime_chat/common/enums/message_enum.dart';
-import 'package:realtime_chat/common/utils/address.dart';
 import 'package:realtime_chat/common/utils/aes_encryption.dart';
 import 'package:realtime_chat/common/utils/rsa_encryption.dart';
-import 'package:realtime_chat/common/utils/util.dart';
 import 'package:realtime_chat/features/auth/controller/auth_controller.dart';
 import 'package:realtime_chat/models/chat_room_model.dart';
 import 'package:realtime_chat/models/message_model.dart';
 
 class ChatController extends GetxController {
-  // The endpoint for the chat API
-  final String endpoint = ENDPOINT_URL;
+  // The endpoint url for the chat API
+  final String CHAT_ENDPOINT_URL =
+      dotenv.get('CHAT_ENDPOINT_URL', fallback: "URL NOT FOUND");
 
-  // The HTTP client for making requests
+  // The HTTP client for making requests to endpoint
   final Dio dio = Dio();
 
   final e2ee = E2EE_AES();
@@ -53,7 +54,7 @@ class ChatController extends GetxController {
   RxList<MessageModel> messageList = <MessageModel>[].obs;
 
   // Observable for the currently selected message
-  RxString selectedMessage = ''.obs;
+  RxString selectedRoomId = ''.obs;
 
   // Observable for the user we're currently chatting with
   Rx<UserChatRoom> receiverUser = UserChatRoom(
@@ -83,11 +84,18 @@ class ChatController extends GetxController {
   Stream<List<ChatRoomModel>> getChat(String id) {
     StreamController<List<ChatRoomModel>> streamController = StreamController();
 
-    dio.get('$endpoint/chat/$id').then((response) {
+    dio.get('$CHAT_ENDPOINT_URL/chat/$id').then((response) {
       if (response.statusCode == 200) {
         List<dynamic> chatRoomData = response.data;
         List<ChatRoomModel> chatRooms =
             chatRoomData.map((data) => ChatRoomModel.fromJson(data)).toList();
+
+        chatRooms.sort((b, a) => a.timesent.compareTo(b.timesent));
+
+        if (!listEquals(chatRooms, chatRoomList)) {
+          chatRoomList.assignAll(chatRooms);
+        }
+
         chatRoomList.value = chatRooms;
         streamController.add(chatRooms);
         streamController.close();
@@ -113,7 +121,7 @@ class ChatController extends GetxController {
   Stream<List<MessageModel>> getMessage(RxString id) {
     StreamController<List<MessageModel>> streamController = StreamController();
 
-    dio.get('$endpoint/message/$id').then((response) {
+    dio.get('$CHAT_ENDPOINT_URL/message/$id').then((response) {
       if (response.statusCode == 200) {
         List<dynamic> messageData = response.data;
         List<MessageModel> messages =
@@ -141,8 +149,13 @@ class ChatController extends GetxController {
   }
 
   // Initializes a chat with the given user
-  void initiateChat(String userId, String name, String profilePic,
-      String userPublicKey, String recipientPublicKey) async {
+  void initiateChat(
+    String userId,
+    String name,
+    String profilePic,
+    String userPublicKey,
+    String recipientPublicKey,
+  ) async {
     final key = e2ee.generateAESKey();
     DateFormat dateFormat = DateFormat('yyyy-MM-dd HH:mm:ss');
     String timeSent = dateFormat.format(DateTime.now());
@@ -159,6 +172,7 @@ class ChatController extends GetxController {
     final userRoomKey = e2eersa.encrypter(userPublicKeyPEM, key.key);
     final recipientRoomKey = e2eersa.encrypter(recipientPublicKeyPEM, key.key);
 
+    // data that saved when initialize chat with other user
     var roomData = {
       "lastMessage": "",
       "timesent": timeSent,
@@ -178,10 +192,9 @@ class ChatController extends GetxController {
           "isSeen": true,
         }
       ],
-      "roomKey": key.key,
     };
     try {
-      await dio.post('$endpoint/chat', data: roomData);
+      await dio.post('$CHAT_ENDPOINT_URL/chat', data: roomData);
     } catch (e) {
       rethrow;
     }
@@ -195,7 +208,7 @@ class ChatController extends GetxController {
     String profilePic,
     String roomKey,
   ) {
-    final privateKey = box.read('${ctrl.currentUser.value.userId}_key');
+    final privateKey = box.read('priv_key');
     final senderPrivateKey = CryptoUtils.rsaPrivateKeyFromPem(addHeaderFooter(
       privateKey,
       false,
@@ -208,7 +221,7 @@ class ChatController extends GetxController {
       roomKey: decryptedRoomKey,
       timesent: '',
     );
-    selectedMessage.value = chatId;
+    selectedRoomId.value = chatId;
     receiverUser.value = UserChatRoom(
       userId: userId,
       name: name,
@@ -217,21 +230,54 @@ class ChatController extends GetxController {
     );
   }
 
+  // Check if there are already chat room with selected user
+  Future<Map<String, dynamic>> getChatId(String user2) async {
+    String? foundChatId;
+    String? foundRoomKey;
+
+    try {
+      final response = await dio.get('$CHAT_ENDPOINT_URL/chat');
+      List<dynamic> chatList = response.data;
+
+      for (var chat in chatList) {
+        List<dynamic> users = chat['users'];
+
+        bool foundUser1 = false;
+        String tempRoomKey = '';
+        for (var user in users) {
+          if (user['username'] == ctrl.currentUser.value.name) {
+            foundUser1 = true;
+            tempRoomKey = user['roomKey'];
+          }
+        }
+
+        bool foundUser2 = users.any((user) => user['username'] == user2);
+
+        if (foundUser1 && foundUser2) {
+          foundChatId = chat['_id'];
+          foundRoomKey = tempRoomKey;
+          break; // Exit the loop once both users are found in a chat
+        }
+      }
+    } catch (error) {
+      return {'chatId': 'ERROR', 'roomKey': 'ERROR'};
+    }
+
+    return {
+      'chatId': foundChatId ?? 'NOT FOUND',
+      'roomKey': foundRoomKey ?? 'NOT FOUND'
+    };
+  }
+
   // Saves a new message to the chat room collection
   void saveDataToChat(
-    String receiverId,
     String chatId,
     String text,
+    String timesent,
   ) async {
-    var collection = db.collection('chats');
-    DateFormat dateFormat = DateFormat('yyyy-MM-dd HH:mm:ss');
-    String timeSent = dateFormat.format(DateTime.now());
     try {
-      // collection.updateOne(where.eq('_id', ObjectId.fromHexString(chatId)),
-      //     modify.set('lastMessage', text));
-      // collection.updateOne(where.eq('_id', ObjectId.fromHexString(chatId)),
-      //     modify.set('timesent', timeSent));
-      await dio.put('$endpoint/chat/$chatId', data: {"text": text});
+      await dio.put('$CHAT_ENDPOINT_URL/chat/$chatId',
+          data: {"text": text, "timesent": timesent});
     } catch (e) {
       rethrow;
     }
@@ -243,22 +289,21 @@ class ChatController extends GetxController {
     String message,
     String receiverId,
     String senderId,
+    String timesent,
     String iv,
     MessageEnum type,
   ) async {
-    DateFormat dateFormat = DateFormat('yyyy-MM-dd HH:mm:ss');
-    String timeSent = dateFormat.format(DateTime.now());
     var messageData = {
       'chatId': chatId,
       'senderId': senderId,
       'receiverId': receiverId,
       'text': message,
       'type': type.type,
-      'timesent': timeSent,
+      'timesent': timesent,
       'iv': iv,
     };
     try {
-      await dio.post('$endpoint/message', data: messageData);
+      await dio.post('$CHAT_ENDPOINT_URL/message', data: messageData);
     } catch (e) {
       rethrow;
     }
@@ -274,14 +319,44 @@ class ChatController extends GetxController {
     final keypair = e2ee.generateAESKey();
     final iv = keypair.iv;
     final encryptedText = e2ee.encrypter(roomKey, iv, text);
+    DateFormat dateFormat = DateFormat('yyyy-MM-dd HH:mm:ss');
+    String timeSent = dateFormat.format(DateTime.now());
     saveDataToMessage(
       chatId,
       encryptedText,
       receiverId,
       ctrl.currentUser.value.userId,
+      timeSent,
       iv,
       MessageEnum.TEXT,
     );
-    saveDataToChat(receiverId, chatId, text);
+    saveDataToChat(chatId, text, timeSent);
+  }
+
+  void sendBroadcastMessage({
+    required String text,
+    required List chatId,
+    required List receiverId,
+    required List roomKey,
+  }) {
+    final privateKey = box.read('priv_key');
+    final senderPrivateKey = CryptoUtils.rsaPrivateKeyFromPem(addHeaderFooter(
+      privateKey,
+      false,
+    ));
+    try {
+      for (var i = 0; i < chatId.length; i++) {
+        final decryptedRoomKey =
+            e2eersa.decrypter(senderPrivateKey, roomKey[i]);
+        sendTextMessage(
+          text: text,
+          chatId: chatId[i],
+          receiverId: receiverId[i],
+          roomKey: decryptedRoomKey,
+        );
+      }
+    } catch (e) {
+      rethrow;
+    }
   }
 }

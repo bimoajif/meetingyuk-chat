@@ -34,7 +34,7 @@ class ChatRoomModel {
         lastMessage: room['lastMessage'],
         users: users,
         // roomKey: roomKey,
-        roomKey: room['roomKey'],
+        roomKey: '',
         timesent: room['timesent']);
   }
 }

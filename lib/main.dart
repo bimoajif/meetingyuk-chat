@@ -1,29 +1,25 @@
 import 'package:flutter/material.dart';
-import 'package:geolocator/geolocator.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:realtime_chat/features/auth/controller/auth_controller.dart';
 import 'package:realtime_chat/routes.dart';
 
 void main() async {
+  // load data from .env
+  await dotenv.load(fileName: '.env');
+
   WidgetsFlutterBinding.ensureInitialized();
   Get.lazyPut(() => AuthController());
   final AuthController ctrl = Get.find();
 
-  // --------------------------------------------------------------
-  // Call getCollection function from AuthController
-  // --------------------------------------------------------------
-  // ctrl.getCollection();
-
-  // --------------------------------------------------------------
   // Initialize GetStorage to save and retrieve local data
-  // --------------------------------------------------------------
   await GetStorage.init();
 
-  // --------------------------------------------------------------
-  // Function to run App
-  // --------------------------------------------------------------
+  // check user location when accessing app
   ctrl.checkLocationPermission();
+  
+  // Function to run App
   runApp(MyApp());
 }
 

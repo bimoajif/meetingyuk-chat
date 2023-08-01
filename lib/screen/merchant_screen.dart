@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
-import 'package:realtime_chat/common/utils/util.dart';
 import 'package:realtime_chat/features/auth/controller/auth_controller.dart';
+import 'package:realtime_chat/features/broadcast/controller/broadcast_controller.dart';
 import 'package:realtime_chat/features/broadcast/screen/broadcast_screen.dart';
 import 'package:realtime_chat/features/chat/controller/chat_controller.dart';
 import 'package:realtime_chat/features/chat/screen/chat_screen.dart';
@@ -41,7 +41,7 @@ class MerchantScreen extends GetView<ChatController> {
         padding: const EdgeInsets.symmetric(vertical: 2),
         child: Obx(
           () => controller.chatRoomList.length.toString() == '0'
-              ? const Center(child: Loader())
+              ? const Center(child: Text('You Have No Chat Data'))
               : ListView.builder(
                   itemCount: controller.chatRoomList.length,
                   itemBuilder: ((context, index) {
@@ -151,6 +151,8 @@ class MerchantScreen extends GetView<ChatController> {
               fontSize: 18.0,
             ),
             onTap: () {
+              Get.lazyPut(() => AuthController());
+              Get.lazyPut(() => BroadcastController());
               Get.toNamed(BroadcastScreen.routeName);
             },
           )

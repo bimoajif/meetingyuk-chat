@@ -1,11 +1,11 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
     <application
-        android:label="realtime_chat"
+        android:label="MeetingYuk"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <meta-data android:name="com.google.android.geo.API_KEY"
-               android:value="AIzaSyBXh_A12JLQR0YYQXZO1RqpLrHfT7x6H_Q"/>
+               android:value="AIzaSyByzfdEmE5rrH0KebicZJq1j7T6fI14s-I"/>
         <activity
             android:name=".MainActivity"
             android:exported="true"

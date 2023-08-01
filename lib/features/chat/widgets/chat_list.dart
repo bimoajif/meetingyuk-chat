@@ -30,7 +30,7 @@ class ChatList extends StatelessWidget {
         itemCount: ctrl.messageList.length,
         itemBuilder: (context, index) {
           final messageData = ctrl.messageList[index];
-          DateTime timesent = DateTime.parse(messageData.timesent).toLocal();
+          DateTime timesent = DateTime.parse(messageData.timesent);
           final decryptedText = aes.decrypter(ctrl.selectedRoom.value.roomKey,
               messageData.iv, messageData.message);
           if (messageData.senderId ==

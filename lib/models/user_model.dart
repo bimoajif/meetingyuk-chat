@@ -1,10 +1,8 @@
-import 'package:mongo_dart/mongo_dart.dart';
-
 class UserModel {
   final String name;
   final String userId;
   final String profilePic;
-  final bool isMerchant;
+  final int isMerchant;
   final String phoneNumber;
   final String publicKey;
 
@@ -33,7 +31,7 @@ class UserModel {
       name: user['name'],
       userId: user['_id'],
       profilePic: user['profilePic'],
-      isMerchant: user['isMerchant'],
+      isMerchant: user['is_merchant'],
       phoneNumber: user['phoneNumber'],
       publicKey: user['publicKey'],
     );

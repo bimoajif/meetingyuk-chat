@@ -2,10 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:realtime_chat/common/utils/util.dart';
-import 'package:realtime_chat/detail_cafe.dart';
 import 'package:realtime_chat/features/auth/controller/auth_controller.dart';
 import 'package:realtime_chat/features/recommendation/screen/recommendation_screen.dart';
-import 'package:realtime_chat/screen/home_screen.dart';
 
 class LoginScreen extends GetView<AuthController> {
   static const String routeName = '/';

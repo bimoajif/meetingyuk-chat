@@ -1,14 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:realtime_chat/colors.dart';
-import 'package:realtime_chat/common/utils/util.dart';
 import 'package:realtime_chat/detail_cafe.dart';
 import 'package:realtime_chat/features/auth/controller/auth_controller.dart';
 import 'package:realtime_chat/features/chat/controller/chat_controller.dart';
-import 'package:realtime_chat/features/chat/screen/chat_screen.dart';
 import 'package:realtime_chat/features/recommendation/controller/recommendation_controller.dart';
 import 'package:realtime_chat/features/recommendation/screen/maps_screen.dart';
-import 'package:realtime_chat/my_flutter_app_icons.dart';
 import 'package:realtime_chat/screen/home_screen.dart';
 
 class RecommendationScreen extends GetView<RecommendationController> {
@@ -118,8 +115,14 @@ class RecommendationScreen extends GetView<RecommendationController> {
                           scrollDirection: Axis.horizontal,
                           itemCount: controller.recommendationList.length,
                           itemBuilder: ((context, index) {
+                            double match = 0;
                             var placeData =
                                 controller.recommendationList[index];
+                            if((placeData.predictedRating / 5) * 100 >= 100) {
+                              match = 100;
+                            } else {
+                              match = (placeData.predictedRating / 5) * 100;
+                            }
                             return Padding(
                               padding: const EdgeInsets.symmetric(
                                 horizontal: 10.0,
@@ -180,6 +183,8 @@ class RecommendationScreen extends GetView<RecommendationController> {
                                             children: [
                                               Text(
                                                 placeData.name,
+                                                overflow: TextOverflow.ellipsis,
+                                                maxLines: 1,
                                                 style: const TextStyle(
                                                   color: Colors.black,
                                                   fontWeight: FontWeight.w800,
@@ -188,12 +193,14 @@ class RecommendationScreen extends GetView<RecommendationController> {
                                               ),
                                               Text(
                                                 placeData.address,
+                                                overflow: TextOverflow.ellipsis,
+                                                maxLines: 2,
                                                 style: const TextStyle(
                                                   fontSize: 14.0,
                                                 ),
                                               ),
                                               Text(
-                                                "${((placeData.predictedRating / 5) * 100).toStringAsFixed(1)} % match",
+                                                "${match.toStringAsFixed(1)} % match",
                                                 style: const TextStyle(
                                                   fontSize: 14.0,
                                                   fontWeight: FontWeight.w800,
@@ -227,7 +234,7 @@ class RecommendationScreen extends GetView<RecommendationController> {
                 style: TextStyle(fontSize: 21),
               ),
               SizedBox(
-                height: MediaQuery.of(context).size.height * 0.4,
+                height: 280,
                 child: Obx(
                   () => controller.nearbyList.length.toString() == '0'
                       ? const Center(child: Text('No Merchants Near You'))
@@ -297,6 +304,8 @@ class RecommendationScreen extends GetView<RecommendationController> {
                                             children: [
                                               Text(
                                                 placeData.name,
+                                                overflow: TextOverflow.ellipsis,
+                                                maxLines: 1,
                                                 style: const TextStyle(
                                                   color: Colors.black,
                                                   fontWeight: FontWeight.w800,
@@ -305,6 +314,8 @@ class RecommendationScreen extends GetView<RecommendationController> {
                                               ),
                                               Text(
                                                 placeData.address,
+                                                overflow: TextOverflow.ellipsis,
+                                                maxLines: 2,
                                                 style: const TextStyle(
                                                   fontSize: 14.0,
                                                 ),

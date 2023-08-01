@@ -154,7 +154,7 @@ class _BroadcastScreenState extends State<BroadcastScreen> {
                               'Silakan isi teks pesan dan pilih tujuan pesan'),
                         );
                       } else {
-                        broadcastController.sendBroadcastMessage(
+                        controller.sendBroadcastMessage(
                             text: _messageController.text,
                             chatId: selectedChat,
                             receiverId: selectedReceiver,

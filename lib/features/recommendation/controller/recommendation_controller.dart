@@ -1,12 +1,18 @@
-import 'dart:async';
+// ignore_for_file: non_constant_identifier_names
 
+import 'dart:async';
 import 'package:dio/dio.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
 import 'package:realtime_chat/common/utils/util.dart';
 import 'package:realtime_chat/features/auth/controller/auth_controller.dart';
 import 'package:realtime_chat/models/recommendation_model.dart';
 
 class RecommendationController extends GetxController {
+  // The endpoint url for the recommendation API
+  final String RECOMMENDATION_ENDPOINT_URL =
+      dotenv.get('RECOMMENDATION_ENDPOINT_URL', fallback: "URL NOT FOUND");
+
   final Dio dio = Dio();
   late AuthController ctrl;
   Timer? recommendationUpdateTimer;
@@ -47,8 +53,7 @@ class RecommendationController extends GetxController {
 
   Future<void> getNearby(String id, latitude, longitude, radius) async {
     final String endpoint =
-        // 'http://103.150.92.14:8000/recommendation/${ctrl.currentUser.value.userId}?max_returns=6&latitude=$latitude&longitude=$longitude&max_radius=$radius'; // Change this to valid endpoint
-        "http://103.150.92.14:8000/near_recs/$latitude,$longitude?max_returns=20&max_radius=$radius";
+        "$RECOMMENDATION_ENDPOINT_URL/near_recs/$latitude,$longitude?max_returns=20&max_radius=$radius";
     try {
       logger.d(endpoint);
       final response = await dio.get(
@@ -76,24 +81,11 @@ class RecommendationController extends GetxController {
 
   Future<void> getRecommendation(String id, latitude, longitude, radius) async {
     final String endpoint =
-        'http://103.150.92.14:8000/recommendation/${ctrl.currentUser.value.userId}?max_returns=6&latitude=$latitude&longitude=$longitude&max_radius=$radius'; // Change this to valid endpoint
-    Map<String, dynamic> queryParams = {
-      "location": {
-        "latitude": latitude,
-        "longitude": longitude,
-        "max_radius": radius,
-      }
-    };
+        '$RECOMMENDATION_ENDPOINT_URL/recommendation/${ctrl.currentUser.value.userId}?max_returns=6&latitude=$latitude&longitude=$longitude&max_radius=$radius'; // Change this to valid endpoint
     try {
       logger.d(endpoint);
       final response = await dio.get(
         endpoint,
-        // data: queryParams,
-        // options: Options(
-        //   headers: {
-        //     'Content-Type': 'application/json',
-        //   }
-        // )
       );
       if (response.statusCode == 200) {
         List<dynamic> placeData = response.data['recommendations'];
@@ -129,7 +121,5 @@ class RecommendationController extends GetxController {
       ratings: ratings,
       reviewCount: reviewCount,
     );
-
-    print(selectedMerchant);
   }
 }

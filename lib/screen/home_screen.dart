@@ -10,7 +10,7 @@ class HomeScreen extends GetView<AuthController> {
 
   @override
   Widget build(BuildContext context) {
-    return controller.currentUser.value.isMerchant == true
+    return controller.currentUser.value.isMerchant == 1
         ? const MerchantScreen()
         : const ClientScreen();
   }

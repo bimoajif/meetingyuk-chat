@@ -25,7 +25,7 @@ class _ChatScreenState extends State<ChatScreen> {
   @override
   void initState() {
     controller.messageList.clear();
-    controller.startMessageUpdates(controller.selectedMessage);
+    controller.startMessageUpdates(controller.selectedRoomId);
     super.initState();
   }
 
@@ -34,7 +34,7 @@ class _ChatScreenState extends State<ChatScreen> {
   // --------------------------------------------------------------
   @override
   void dispose() {
-    controller.selectedMessage.value = '';
+    controller.selectedRoomId.value = '';
     super.dispose();
   }
 

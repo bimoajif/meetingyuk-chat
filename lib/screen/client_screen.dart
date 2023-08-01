@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
-import 'package:realtime_chat/common/utils/util.dart';
 import 'package:realtime_chat/features/auth/controller/auth_controller.dart';
 import 'package:realtime_chat/features/chat/controller/chat_controller.dart';
 import 'package:realtime_chat/features/chat/screen/chat_screen.dart';
@@ -39,7 +38,7 @@ class ClientScreen extends GetView<ChatController> {
         padding: const EdgeInsets.symmetric(vertical: 2),
         child: Obx(
           () => controller.chatRoomList.length.toString() == '0'
-              ? const Center(child: Loader())
+              ? const Center(child: Text('You Have No Chat Data'))
               : ListView.builder(
                   itemCount: controller.chatRoomList.length,
                   itemBuilder: ((context, index) {
